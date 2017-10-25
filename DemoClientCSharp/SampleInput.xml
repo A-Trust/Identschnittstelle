@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<idr:Confirmation Version="3" xmlns:idr="http://reference.e-government.gv.at/namespace/idconfirmation#" xmlns:pd="http://reference.e-government.gv.at/namespace/persondata/20020228#">
+  <pd:CompactPhysicalPerson>
+    <pd:CompactName>
+      <pd:GivenName>Max</pd:GivenName>
+      <pd:FamilyName>Mustermann</pd:FamilyName>
+    </pd:CompactName>
+    <pd:Sex>male</pd:Sex>
+    <pd:DateOfBirth>1940-01-01</pd:DateOfBirth>
+  </pd:CompactPhysicalPerson>
+  <idr:SignatoryData/>
+  <idr:Binding>
+    <pd:Mobile>
+      <pd:FormattedNumber>10301998745646456</pd:FormattedNumber>
+    </pd:Mobile>
+  </idr:Binding>
+  <idr:Hash>
+    <idr:HashValue>XGllnlZACyu73Wm1sEa+49u47UQ=</idr:HashValue>
+  </idr:Hash>
+</idr:Confirmation>
