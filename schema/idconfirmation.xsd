@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    version="1.2.0" 
+    targetNamespace="http://reference.e-government.gv.at/namespace/idconfirmation#" 
+    xmlns:pd="http://reference.e-government.gv.at/namespace/persondata/20020228#" 
+    xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" 
+    xmlns="http://reference.e-government.gv.at/namespace/idconfirmation#" 
+    xmlns:ns="http://reference.e-government.gv.at/namespace/idconfirmation#" 
+    xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion"
+    elementFormDefault="qualified" 
+    attributeFormDefault="unqualified">
+    
+  <xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="W3C-XMLDSig.xsd" />
+  <xsd:import namespace="http://reference.e-government.gv.at/namespace/persondata/20020228#" schemaLocation="PersonData_20_en.xsd" />
+  <!-- Confirmation -->
+  <xsd:element name="Confirmation" type="ConfirmationType">
+    <xsd:annotation>
+      <xsd:documentation>Bestätigung der Identität einer Person</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  
+  <xsd:complexType name="ConfirmationType">
+    <xsd:sequence>
+      <xsd:element ref="pd:CompactPhysicalPerson" minOccurs="0" maxOccurs="1" /> <!-- ecard ro -> no person data -->
+      <xsd:element ref="pd:CompactPostalAddress" minOccurs="0" maxOccurs="1" />  
+      <xsd:element name="SignatoryData" type="SignatoryDataType" minOccurs="0" maxOccurs="1" /> 
+      <xsd:element name="Identification" type="IdentificationType" minOccurs="0" maxOccurs="1" /> <!-- if signed by RO, this element is required -->
+      <xsd:element name="PaymentData" type="PaymentDataType" minOccurs="0" maxOccurs="1" /> <!-- for acos cards -->
+      <xsd:element name="ServerToken" type="ServerTokenType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="Custom" type="CustomType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="Binding" type="BindingType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="Hash" type="HashType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="IdentityLinkSaml" type="IdentityLinkSamlType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="ValidTo" type="xsd:dateTime" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="dsig:Signature" minOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="SignatoryDataType">
+    <xsd:annotation>
+      <xsd:documentation>Optionale Signatordaten</xsd:documentation>
+    </xsd:annotation>    
+    <xsd:sequence>
+      <xsd:element name="PhoneNumber" type="xsd:string" minOccurs="0" maxOccurs="1" >
+        <xsd:annotation>
+          <xsd:documentation>Telefonnummer, für Kontaktaufnahme druch den ZDA</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="EMailAddress" type="xsd:anyURI" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>eMail Adresse, für Kontaktaufnahme durch den ZDA und für eMail Adresse im Zertifikat</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>      
+      <xsd:element name="HomeZIP" type="xsd:string" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>PLZ der Meldeadresse, zusätzlichen Parameter bei der ZMR Abfragen bei eCard und Mobile Signatur</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>     
+      <xsd:element name="HomeCountry" type="IdNationType" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>Land der Meldeadresse</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>       
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="IdentificationType">
+    <xsd:annotation>
+      <xsd:documentation>Ausweisdaten bei Identifikation durch einen RO</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="IdType" type="IdTypeType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="IdNumber" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="IdIssueDate" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="IdAuthority" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="IdNation" type="IdNationType" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PaymentDataType">
+    <xsd:annotation>
+      <xsd:documentation>Optionale Zahlungsdaten, wird nur bei ACOS Aktivierung benötigt</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="AccountInformation" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="IBAN" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="BIC" type="xsd:string" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ServerTokenType">
+    <xsd:annotation>
+      <xsd:documentation>Rueckmeldung an einbringende Applikation</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Token" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="ServerIdentication" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="ServerIdentification" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="ResponseUrl" type="xsd:string" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>  
+  <xsd:complexType name="BindingType">
+    <xsd:sequence>
+      <xsd:element ref="pd:Mobile" minOccurs="0" maxOccurs="1" />
+      <xsd:element ref="CIN" minOccurs="0" maxOccurs="1" />
+      <xsd:element ref="SVNR" minOccurs="0" maxOccurs="1" />
+      <xsd:element ref="CINCSN" minOccurs="0" maxOccurs="1" />
+      <xsd:element ref="AcosExtCardNumber" minOccurs="0" maxOccurs="1" />
+      <xsd:element ref="Bestellnummer" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="HashType">
+    <xsd:sequence>
+      <xsd:element name="HashValue" type="xsd:string" minOccurs="1" maxOccurs="1" >
+        <xsd:annotation>
+          <xsd:documentation>Hashwert aus Einmalcode und Kennwort (Base64 kodiert)</xsd:documentation>
+        </xsd:annotation>        
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="IdTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="APO" />
+      <xsd:enumeration value="BEPA" />
+      <xsd:enumeration value="DOL" />
+      <xsd:enumeration value="eDA" />
+      <xsd:enumeration value="EDU" />
+      <xsd:enumeration value="REIS" />
+      <xsd:enumeration value="NOTA" />
+      <xsd:enumeration value="RA" />
+      <xsd:enumeration value="SV" />
+      <xsd:enumeration value="WU" />
+      <xsd:enumeration value="ZTA" />
+      <xsd:enumeration value="IDKA" />
+      <xsd:enumeration value="FUEH" />
+      <xsd:enumeration value="PERS" />
+      <xsd:enumeration value="CHID" />
+      <xsd:enumeration value="FLID" />
+      <xsd:enumeration value="GEME" />
+      <xsd:enumeration value="WABK" />
+      <xsd:enumeration value="WAPA" />      
+      <xsd:enumeration value="eDAO" />      
+      <xsd:enumeration value="PERD" />
+      <xsd:enumeration value="ASP" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="IdNationType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="AF" /> <!-- Afghanistan -->
+      <xsd:enumeration value="AL" /> <!-- Albanien -->
+      <xsd:enumeration value="DZ" /> <!-- Algerien -->
+      <xsd:enumeration value="AD" /> <!-- Andorra -->
+      <xsd:enumeration value="AO" /> <!-- Angola -->
+      <xsd:enumeration value="AI" /> <!-- Anguilla -->
+      <xsd:enumeration value="AG" /> <!-- Antigua und Barbuda -->
+      <xsd:enumeration value="AR" /> <!-- Argentinien -->
+      <xsd:enumeration value="AM" /> <!-- Armenien -->
+      <xsd:enumeration value="AW" /> <!-- Aruba -->
+      <xsd:enumeration value="SH" /> <!-- Ascension -->
+      <xsd:enumeration value="AZ" /> <!-- Aserbaidschan -->
+      <xsd:enumeration value="AU" /> <!-- Australien -->
+      <xsd:enumeration value="BS" /> <!-- Bahamas -->
+      <xsd:enumeration value="BH" /> <!-- Bahrain -->
+      <xsd:enumeration value="BD" /> <!-- Bangladesh -->
+      <xsd:enumeration value="BB" /> <!-- Barbados -->
+      <xsd:enumeration value="BY" /> <!-- Belarus -->
+      <xsd:enumeration value="BE" /> <!-- Belgien -->
+      <xsd:enumeration value="BZ" /> <!-- Belize -->
+      <xsd:enumeration value="BJ" /> <!-- Benin -->
+      <xsd:enumeration value="BM" /> <!-- Bermuda -->
+      <xsd:enumeration value="BT" /> <!-- Bhutan -->
+      <xsd:enumeration value="BO" /> <!-- Bolivien -->
+      <xsd:enumeration value="BA" /> <!-- Bosnien-Herzegowina -->
+      <xsd:enumeration value="BW" /> <!-- Botswana -->
+      <xsd:enumeration value="BR" /> <!-- Brasilien -->
+      <xsd:enumeration value="BN" /> <!-- Brunei Darussalam -->
+      <xsd:enumeration value="BG" /> <!-- Bulgarien -->
+      <xsd:enumeration value="BF" /> <!-- Burkina Faso -->
+      <xsd:enumeration value="BI" /> <!-- Burundi -->
+      <xsd:enumeration value="TC" /> <!-- Caicos Inseln -->
+      <xsd:enumeration value="KY" /> <!-- Cayman -->
+      <xsd:enumeration value="CL" /> <!-- Chile -->
+      <xsd:enumeration value="TW" /> <!-- China, Taiwan -->
+      <xsd:enumeration value="CN" /> <!-- China, Volksrepublik -->
+      <xsd:enumeration value="CK" /> <!-- Cookinseln -->
+      <xsd:enumeration value="CR" /> <!-- Costa Rica -->
+      <xsd:enumeration value="CI" /> <!-- Cote d'Ivoire -->
+      <xsd:enumeration value="DE" /> <!-- Deutschland -->
+      <xsd:enumeration value="DJ" /> <!-- Djibouti -->
+      <xsd:enumeration value="DM" /> <!-- Dominica -->
+      <xsd:enumeration value="DO" /> <!-- Dominikanische Republik -->
+      <xsd:enumeration value="DK" /> <!-- Dänemark -->
+      <xsd:enumeration value="EC" /> <!-- Ekuador -->
+      <xsd:enumeration value="SV" /> <!-- El Salvador -->
+      <xsd:enumeration value="CI" /> <!-- Elfenbeinküste -->
+      <xsd:enumeration value="GB" /> <!-- England -->
+      <xsd:enumeration value="ER" /> <!-- Eritrea -->
+      <xsd:enumeration value="EE" /> <!-- Estland -->
+      <xsd:enumeration value="FK" /> <!-- Falkland -->
+      <xsd:enumeration value="FO" /> <!-- Farör -->
+      <xsd:enumeration value="FJ" /> <!-- Fidschi -->
+      <xsd:enumeration value="FI" /> <!-- Finnland -->
+      <xsd:enumeration value="FR" /> <!-- Frankreich -->
+      <xsd:enumeration value="GF" /> <!-- Französisch-Guayana -->
+      <xsd:enumeration value="PF" /> <!-- Französisch-Polynesien -->
+      <xsd:enumeration value="GA" /> <!-- Gabun -->
+      <xsd:enumeration value="GM" /> <!-- Gambia -->
+      <xsd:enumeration value="GE" /> <!-- Georgien -->
+      <xsd:enumeration value="GH" /> <!-- Ghana -->
+      <xsd:enumeration value="GI" /> <!-- Gibraltar -->
+      <xsd:enumeration value="GD" /> <!-- Grenada -->
+      <xsd:enumeration value="GR" /> <!-- Griechenland -->
+      <xsd:enumeration value="GB" /> <!-- Grossbritannien -->
+      <xsd:enumeration value="GL" /> <!-- Grönland -->
+      <xsd:enumeration value="GP" /> <!-- Guadeloupe -->
+      <xsd:enumeration value="GU" /> <!-- Guam -->
+      <xsd:enumeration value="GT" /> <!-- Guatemala -->
+      <xsd:enumeration value="GB" /> <!-- Guernsey -->
+      <xsd:enumeration value="GN" /> <!-- Guinea -->
+      <xsd:enumeration value="GW" /> <!-- Guinea-Bissau -->
+      <xsd:enumeration value="GY" /> <!-- Guyana -->
+      <xsd:enumeration value="HT" /> <!-- Haiti -->
+      <xsd:enumeration value="NL" /> <!-- Holland -->
+      <xsd:enumeration value="HN" /> <!-- Honduras -->
+      <xsd:enumeration value="HK" /> <!-- Hongkong -->
+      <xsd:enumeration value="IN" /> <!-- Indien -->
+      <xsd:enumeration value="ID" /> <!-- Indonesien -->
+      <xsd:enumeration value="IQ" /> <!-- Irak -->
+      <xsd:enumeration value="IR" /> <!-- Iran -->
+      <xsd:enumeration value="IE" /> <!-- Irland -->
+      <xsd:enumeration value="IS" /> <!-- Island -->
+      <xsd:enumeration value="IL" /> <!-- Israel -->
+      <xsd:enumeration value="IT" /> <!-- Italien -->
+      <xsd:enumeration value="JM" /> <!-- Jamaika -->
+      <xsd:enumeration value="JP" /> <!-- Japan -->
+      <xsd:enumeration value="YE" /> <!-- Jemen -->
+      <xsd:enumeration value="GB" /> <!-- Jersey -->
+      <xsd:enumeration value="JO" /> <!-- Jordanien -->
+      <xsd:enumeration value="KH" /> <!-- Kambodscha -->
+      <xsd:enumeration value="CM" /> <!-- Kamerun -->
+      <xsd:enumeration value="CA" /> <!-- Kanada -->
+      <xsd:enumeration value="CV" /> <!-- Kapverdische Inseln -->
+      <xsd:enumeration value="KZ" /> <!-- Kasachstan -->
+      <xsd:enumeration value="QA" /> <!-- Katar -->
+      <xsd:enumeration value="KE" /> <!-- Kenia -->
+      <xsd:enumeration value="KG" /> <!-- Kirgisistan -->
+      <xsd:enumeration value="KI" /> <!-- Kiribati -->
+      <xsd:enumeration value="CO" /> <!-- Kolumbien -->
+      <xsd:enumeration value="KM" /> <!-- Komoren -->
+      <xsd:enumeration value="CG" /> <!-- Kongo -->
+      <xsd:enumeration value="CD" /> <!-- Kongo, Demokratische Republik (ex-Zaire) -->
+      <xsd:enumeration value="KP" /> <!-- Korea, Demo. Volksrepublik (Nordkorea) -->
+      <xsd:enumeration value="KR" /> <!-- Korea, Republik (Südkorea) -->
+      <xsd:enumeration value="XZ" /> <!-- Kosovo (Interim. Verw. der UNO) -->
+      <xsd:enumeration value="HR" /> <!-- Kroatien -->
+      <xsd:enumeration value="CU" /> <!-- Kuba -->
+      <xsd:enumeration value="KW" /> <!-- Kuwait -->
+      <xsd:enumeration value="LA" /> <!-- Laos -->
+      <xsd:enumeration value="LS" /> <!-- Lesotho -->
+      <xsd:enumeration value="LV" /> <!-- Lettland -->
+      <xsd:enumeration value="LB" /> <!-- Libanon -->
+      <xsd:enumeration value="LR" /> <!-- Liberia -->
+      <xsd:enumeration value="LY" /> <!-- Libyen -->
+      <xsd:enumeration value="LI" /> <!-- Liechtenstein -->
+      <xsd:enumeration value="LT" /> <!-- Litauen -->
+      <xsd:enumeration value="LU" /> <!-- Luxemburg -->
+      <xsd:enumeration value="MO" /> <!-- Macao -->
+      <xsd:enumeration value="MG" /> <!-- Madagaskar -->
+      <xsd:enumeration value="MW" /> <!-- Malawi -->
+      <xsd:enumeration value="MY" /> <!-- Malaysia -->
+      <xsd:enumeration value="MV" /> <!-- Malediven -->
+      <xsd:enumeration value="ML" /> <!-- Mali -->
+      <xsd:enumeration value="MT" /> <!-- Malta -->
+      <xsd:enumeration value="GB" /> <!-- Man, Insel -->
+      <xsd:enumeration value="MA" /> <!-- Marokko -->
+      <xsd:enumeration value="MQ" /> <!-- Martinique -->
+      <xsd:enumeration value="MR" /> <!-- Mauretanien -->
+      <xsd:enumeration value="MU" /> <!-- Mauritius -->
+      <xsd:enumeration value="YT" /> <!-- Mayotte -->
+      <xsd:enumeration value="MK" /> <!-- Mazedonien (ehemalige jugoslawische Republik) -->
+      <xsd:enumeration value="MX" /> <!-- Mexiko -->
+      <xsd:enumeration value="MD" /> <!-- Moldova -->
+      <xsd:enumeration value="MC" /> <!-- Monaco -->
+      <xsd:enumeration value="MN" /> <!-- Mongolei -->
+      <xsd:enumeration value="MS" /> <!-- Montserrat -->
+      <xsd:enumeration value="MZ" /> <!-- Mosambik -->
+      <xsd:enumeration value="MM" /> <!-- Myanmar (Union) -->
+      <xsd:enumeration value="NA" /> <!-- Namibia -->
+      <xsd:enumeration value="NR" /> <!-- Nauru -->
+      <xsd:enumeration value="NP" /> <!-- Nepal -->
+      <xsd:enumeration value="NC" /> <!-- Neukaledonien -->
+      <xsd:enumeration value="NZ" /> <!-- Neuseeland -->
+      <xsd:enumeration value="NL" /> <!-- Niederlande -->
+      <xsd:enumeration value="AN" /> <!-- Niederländische Antillen -->
+      <xsd:enumeration value="NE" /> <!-- Niger -->
+      <xsd:enumeration value="NG" /> <!-- Nigeria -->
+      <xsd:enumeration value="NI" /> <!-- Nikaragua -->
+      <xsd:enumeration value="KP" /> <!-- Nordkorea (Demo. Volksrepublik Korea) -->
+      <xsd:enumeration value="NF" /> <!-- Norfolk -->
+      <xsd:enumeration value="NO" /> <!-- Norwegen -->
+      <xsd:enumeration value="OM" /> <!-- Oman -->
+      <xsd:enumeration value="TP" /> <!-- Osttimor -->
+      <xsd:enumeration value="PK" /> <!-- Pakistan -->
+      <xsd:enumeration value="PS" /> <!-- Palestina -->
+      <xsd:enumeration value="PA" /> <!-- Panama -->
+      <xsd:enumeration value="PG" /> <!-- Papua-Neuguinea -->
+      <xsd:enumeration value="PY" /> <!-- Paraguay -->
+      <xsd:enumeration value="PE" /> <!-- Peru -->
+      <xsd:enumeration value="PH" /> <!-- Philippinen -->
+      <xsd:enumeration value="PN" /> <!-- Pitcairn -->
+      <xsd:enumeration value="PL" /> <!-- Polen -->
+      <xsd:enumeration value="PT" /> <!-- Portugal -->
+      <xsd:enumeration value="PR" /> <!-- Puerto Rico -->
+      <xsd:enumeration value="QA" /> <!-- Qatar -->
+      <xsd:enumeration value="RE" /> <!-- Reunion -->
+      <xsd:enumeration value="RO" /> <!-- Rumänien -->
+      <xsd:enumeration value="RU" /> <!-- Russische Föderation -->
+      <xsd:enumeration value="RW" /> <!-- Rwanda -->
+      <xsd:enumeration value="SB" /> <!-- Salomon-Inseln -->
+      <xsd:enumeration value="ZM" /> <!-- Sambia -->
+      <xsd:enumeration value="AS" /> <!-- Samoa (amerikanischer Teil) -->
+      <xsd:enumeration value="WS" /> <!-- Samoa (West) -->
+      <xsd:enumeration value="SM" /> <!-- San Marino -->
+      <xsd:enumeration value="LC" /> <!-- Santa Lucia -->
+      <xsd:enumeration value="ST" /> <!-- Sao Tome und Principe -->
+      <xsd:enumeration value="SA" /> <!-- Saudi-Arabien -->
+      <xsd:enumeration value="GB" /> <!-- Schottland -->
+      <xsd:enumeration value="SE" /> <!-- Schweden -->
+      <xsd:enumeration value="CH" /> <!-- Schweiz -->
+      <xsd:enumeration value="SN" /> <!-- Senegal -->
+      <xsd:enumeration value="YU" /> <!-- Serbien und Montenegro -->
+      <xsd:enumeration value="SC" /> <!-- Seychellen -->
+      <xsd:enumeration value="SL" /> <!-- Sierra Leone -->
+      <xsd:enumeration value="ZW" /> <!-- Simbabwe -->
+      <xsd:enumeration value="SG" /> <!-- Singapur -->
+      <xsd:enumeration value="SK" /> <!-- Slowakische Republik -->
+      <xsd:enumeration value="SI" /> <!-- Slowenien -->
+      <xsd:enumeration value="SO" /> <!-- Somalia -->
+      <xsd:enumeration value="ES" /> <!-- Spanien -->
+      <xsd:enumeration value="LK" /> <!-- Sri Lanka -->
+      <xsd:enumeration value="KN" /> <!-- St. Christoph und Nevis -->
+      <xsd:enumeration value="SH" /> <!-- St. Helena -->
+      <xsd:enumeration value="LC" /> <!-- St. Lucia -->
+      <xsd:enumeration value="PM" /> <!-- St. Pierre und Miquelon -->
+      <xsd:enumeration value="ST" /> <!-- St. Thomas und Principe -->
+      <xsd:enumeration value="VC" /> <!-- St. Vincent und die Grenadinen -->
+      <xsd:enumeration value="SD" /> <!-- Sudan -->
+      <xsd:enumeration value="SR" /> <!-- Suriname -->
+      <xsd:enumeration value="SZ" /> <!-- Swasiland -->
+      <xsd:enumeration value="ZA" /> <!-- Südafrika -->
+      <xsd:enumeration value="KR" /> <!-- Südkorea (Republik Korea) -->
+      <xsd:enumeration value="SY" /> <!-- Syrien -->
+      <xsd:enumeration value="TJ" /> <!-- Tadschikistan -->
+      <xsd:enumeration value="TW" /> <!-- Taiwan -->
+      <xsd:enumeration value="TZ" /> <!-- Tansania -->
+      <xsd:enumeration value="TH" /> <!-- Thailand -->
+      <xsd:enumeration value="TG" /> <!-- Togo -->
+      <xsd:enumeration value="TO" /> <!-- Tonga -->
+      <xsd:enumeration value="TT" /> <!-- Trinidad und Tobago -->
+      <xsd:enumeration value="SH" /> <!-- Tristan da Cunha -->
+      <xsd:enumeration value="TD" /> <!-- Tschad -->
+      <xsd:enumeration value="CZ" /> <!-- Tschechische Republik -->
+      <xsd:enumeration value="TN" /> <!-- Tunesien -->
+      <xsd:enumeration value="TM" /> <!-- Turkmenistan -->
+      <xsd:enumeration value="TC" /> <!-- Turks und Caicos -->
+      <xsd:enumeration value="TV" /> <!-- Tuvalu -->
+      <xsd:enumeration value="TR" /> <!-- Türkei -->
+      <xsd:enumeration value="UG" /> <!-- Uganda -->
+      <xsd:enumeration value="UA" /> <!-- Ukraine -->
+      <xsd:enumeration value="HU" /> <!-- Ungarn -->
+      <xsd:enumeration value="UY" /> <!-- Uruguay -->
+      <xsd:enumeration value="US" /> <!-- USA -->
+      <xsd:enumeration value="UZ" /> <!-- Usbekistan -->
+      <xsd:enumeration value="VU" /> <!-- Vanuatu -->
+      <xsd:enumeration value="VA" /> <!-- Vatikan -->
+      <xsd:enumeration value="VE" /> <!-- Venezuela -->
+      <xsd:enumeration value="AE" /> <!-- Vereinigte Arabische Emirate -->
+      <xsd:enumeration value="US" /> <!-- Vereinigte Staaten von Amerika -->
+      <xsd:enumeration value="VN" /> <!-- Vietnam -->
+      <xsd:enumeration value="VG" /> <!-- Virginische Inseln (brit. Teil) -->
+      <xsd:enumeration value="WF" /> <!-- Wallis und Futuna -->
+      <xsd:enumeration value="CX" /> <!-- Weihnachtsinsel -->
+      <xsd:enumeration value="BY" /> <!-- Weißrussland -->
+      <xsd:enumeration value="CF" /> <!-- Zentralafrikanische Republik -->
+      <xsd:enumeration value="ZW" /> <!-- Zimbabwe -->
+      <xsd:enumeration value="CY" /> <!-- Zypern -->
+      <xsd:enumeration value="EG" /> <!-- Ägypten -->
+      <xsd:enumeration value="GQ" /> <!-- Äquatorial-Guinea -->
+      <xsd:enumeration value="ET" /> <!-- Äthiopien -->
+      <xsd:enumeration value="AT" /> <!-- Österreich -->
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:element name="CIN">
+    <xsd:annotation>
+      <xsd:documentation>Card Identification Number [EN1867] (eCard)</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:token">
+        <xsd:maxLength value="20"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:element name="SVNR">
+    <xsd:annotation>
+      <xsd:documentation>Sozialversicherungsnummer der österreichischen eCard</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:token">
+        <xsd:maxLength value="10"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:element name="CINCSN">
+    <xsd:annotation>
+      <xsd:documentation>Signatornummer und Kartenfolgenummer der ACOS Karten</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:token">
+        <xsd:maxLength value="16"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:element name="AcosExtCardNumber">
+    <xsd:annotation>
+      <xsd:documentation>Chip Seriennummer der ACOS Karte</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:token">
+        <xsd:maxLength value="32"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:element name="Bestellnummer">
+    <xsd:annotation>
+      <xsd:documentation>Bestellnummer für Aktivierung</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:token">
+        <xsd:maxLength value="20"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:complexType name="CustomType">
+    <xsd:annotation>
+      <xsd:documentation>Zusatzfelder fur spezielle Parameter</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Value" type="CustomValueType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="CustomValueType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="Name" type="xsd:string" use="required"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="IdentityLinkSamlType">
+    <xsd:annotation>
+      <xsd:documentation>Optionale Personenbindung des ROs</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice minOccurs="0">
+      <xsd:element name="Base64Content" type="xsd:base64Binary"/>
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="XMLContentType" mixed="true">
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+      <xsd:any namespace="##any" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
