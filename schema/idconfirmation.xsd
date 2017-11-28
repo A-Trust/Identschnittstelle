@@ -69,11 +69,12 @@
       <xsd:documentation>Ausweisdaten bei Identifikation durch einen RO</xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="IdType" type="IdTypeType" minOccurs="1" maxOccurs="1" />
-      <xsd:element name="IdNumber" type="xsd:string" minOccurs="1" maxOccurs="1" />
-      <xsd:element name="IdIssueDate" type="xsd:string" minOccurs="1" maxOccurs="1" />
-      <xsd:element name="IdAuthority" type="xsd:string" minOccurs="1" maxOccurs="1" />
-      <xsd:element name="IdNation" type="IdNationType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="IdMethod" type="IdMethodType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IdType" type="IdTypeType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IdNumber" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IdIssueDate" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IdAuthority" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IdNation" type="IdNationType" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="PaymentDataType">
@@ -116,6 +117,14 @@
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
+  <xsd:simpleType name="IdMethodType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="VideoId" />
+      <xsd:enumeration value="EID" />
+      <xsd:enumeration value="IDCard" />
+      <xsd:enumeration value="Other" />
+    </xsd:restriction>  
+  </xsd:simpleType>
   <xsd:simpleType name="IdTypeType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="APO" />
@@ -453,7 +462,6 @@
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
-
   <xsd:complexType name="IdentityLinkSamlType">
     <xsd:annotation>
       <xsd:documentation>Optionale Personenbindung des ROs</xsd:documentation>
