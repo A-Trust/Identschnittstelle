@@ -81,6 +81,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.entity.ByteArrayEntity;
 import javax.xml.crypto.XMLStructure;
+import java.util.Random;
+import java.security.SecureRandom;
 
 import static javax.xml.xpath.XPathConstants.NODESET;
 
@@ -88,9 +90,10 @@ public class IdentRecord {
 
 
 	private static String baseURL = "https://hs-abnahme.a-trust.at/aktivierung/v3";  
+	private static String activationUrl = "https://hs-abnahme.a-trust.at/aktivierung/Aktivierung.aspx";  
 	private static String signCert = "PATH_TO_P12_OR_PFX_FILE";  
-	private static String signCertPwd = "PDF_PASSWORD";
-	private static String sampleInputXml = "<idr:Confirmation Version=\"3\" xmlns:idr=\"http://reference.e-government.gv.at/namespace/idconfirmation#\" xmlns:pd=\"http://reference.e-government.gv.at/namespace/persondata/20020228#\">  <pd:CompactPhysicalPerson>    <pd:CompactName>      <pd:GivenName>Max</pd:GivenName>      <pd:FamilyName>Mustermann</pd:FamilyName>    </pd:CompactName>    <pd:Sex>male</pd:Sex>    <pd:DateOfBirth>1940-01-01</pd:DateOfBirth>  </pd:CompactPhysicalPerson>  <idr:SignatoryData/>  <idr:Binding>    <pd:Mobile>      <pd:FormattedNumber>10301998745646456</pd:FormattedNumber>    </pd:Mobile>  </idr:Binding>  <idr:Hash>    <idr:HashValue>XGllnlZACyu73Wm1sEa+49u47UQ=</idr:HashValue>  </idr:Hash></idr:Confirmation>";
+	private static String signCertPwd = "PFX_PASSWORD";
+	private static String sampleInputXml_Template = "<idr:Confirmation Version=\"3\" xmlns:idr=\"http://reference.e-government.gv.at/namespace/idconfirmation#\" xmlns:pd=\"http://reference.e-government.gv.at/namespace/persondata/20020228#\">  <pd:CompactPhysicalPerson>    <pd:CompactName>      <pd:GivenName>##GIVENNAME##</pd:GivenName>      <pd:FamilyName>##FAMILYNAME##</pd:FamilyName>    </pd:CompactName>    <pd:Sex>##SEX##</pd:Sex>    <pd:DateOfBirth>##DATEOFBIRTH##</pd:DateOfBirth>  </pd:CompactPhysicalPerson>  <idr:SignatoryData/>  <idr:Binding>    <pd:Mobile>      <pd:FormattedNumber>##MOBILENUMBER##</pd:FormattedNumber>    </pd:Mobile>  </idr:Binding>  <idr:Hash>    <idr:HashValue>##HASHVALUE##</idr:HashValue>  </idr:Hash></idr:Confirmation>";
 	
 	
 	private static String etsi_prefix = "etsi";
@@ -100,11 +103,33 @@ public class IdentRecord {
 
 	private static String signatureId = "signature-1";
 	private static String signedPropertiesId =  signatureId + "_SignedProperties";
+	
+	private static  Random random = new SecureRandom();
 
 	public static void main(String[] args) throws Exception {
 
+		String mobileNumber = "10301998745646456";
+		String activationPin = randomString();
+		String identRecordXml = sampleInputXml_Template;
+
+
+		String identifier = mobileNumber + activationPin;
+		byte[] utf8bytes = identifier.getBytes(StandardCharsets.UTF_8);
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		String hashvalue = Base64.getEncoder().encodeToString(digest.digest(utf8bytes));
+
+
+		//TODO: better xml escape input values
+		identRecordXml = identRecordXml.replace("##FAMILYNAME##", "Mustermann");
+		identRecordXml = identRecordXml.replace("##GIVENNAME##", "Max");
+		identRecordXml = identRecordXml.replace("##DATEOFBIRTH##", "1940-01-01");
+		identRecordXml = identRecordXml.replace("##SEX##", "male");
+		identRecordXml = identRecordXml.replace("##MOBILENUMBER##", mobileNumber);
+		identRecordXml = identRecordXml.replace("##HASHVALUE##", hashvalue);
 		
-		byte[] xmlSignature = createXmlDocumentAndSign();
+
+		
+		byte[] xmlSignature = createXmlDocumentAndSign(identRecordXml);
 		//String temp = new String(xmlSignature);
 		//System.out.println("XML signature: " + temp);
 		
@@ -124,6 +149,18 @@ public class IdentRecord {
 		else {
 			System.out.println("error add identrecord: " + Integer.toString(result));
 		}
+
+		System.out.println("go to " + activationUrl + "?aktivierungscode=" + mobileNumber + "&freischaltepin=" + activationPin);
+	}
+	
+	private static String randomString() {
+        char[] symbols = "ABCDEFGHKMNPQRSTUVWXYZ23456789".toCharArray();        
+		char[] buf = new char[8];
+		for (int idx = 0; idx < buf.length; ++idx) {
+			buf[idx] = symbols[random.nextInt(symbols.length)];
+		}
+
+		return new String(buf);
 	}
 	
 
@@ -192,7 +229,7 @@ public class IdentRecord {
 	}
 
 
-	private static byte[] createXmlDocumentAndSign() throws Exception {
+	private static byte[] createXmlDocumentAndSign(String identRecordXml) throws Exception {
 		
 		// load p12
 		KeyStore keystore = KeyStore.getInstance("pkcs12");
@@ -214,7 +251,7 @@ public class IdentRecord {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); 
 		dbf.setNamespaceAware(true);
 		DocumentBuilder builder = dbf.newDocumentBuilder();  
-		Document doc = builder.parse(new ByteArrayInputStream(sampleInputXml.getBytes())); 		
+		Document doc = builder.parse(new ByteArrayInputStream(identRecordXml.getBytes())); 		
 		XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM"); 
 		
 		// sign -- reference 1
