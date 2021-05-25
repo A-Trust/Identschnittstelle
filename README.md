@@ -1,5 +1,5 @@
 # Identschnittstelle
-Identitätsschnittstelle der A-Trust zur Ausstellung eines qualifizierten Zertifikates
 
-Zur Nutzung der Schnittstelle ist ein Authentifizierungszertifikat erfolderlich, welches von A-Trust nach Abschluß der rechtlichen Vereinbarung erhältlich ist.
+Identity interface of A-Trust for issuing a qualified certificate.
 
+To use the interface, an authentication certificate is required, which can be obtained from A-Trust after conclusion of the legal agreement. tion of the legal agreement.
