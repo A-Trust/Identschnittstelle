@@ -1,0 +1,39 @@
+﻿<idr:Confirmation
+xmlns:idr="http://www.a-trust.at/namespace/idconfirmation#"
+xmlns:dsig="http://www.w3.org/2000/09/xmldsig#"
+Version='4'>
+	<idr:PersonData>
+		<idr:GivenName>Max Xaver</idr:GivenName>
+		<idr:FamilyName>Mustermann</idr:FamilyName>
+		<idr:SexCode>male</idr:SexCode>
+		<idr:DateOfBirth>1976-11-11</idr:DateOfBirth>
+		<idr:PlaceOfBirth>Wien</idr:PlaceOfBirth>
+		<idr:PhoneNumber>+436505555555</idr:PhoneNumber>
+		<idr:EMailAddress>test@test.com</idr:EMailAddress>
+		<idr:PostalAddress>
+			<idr:AddressLine1>Max Mustermann</idr:AddressLine1>
+			<idr:AddressLine2></idr:AddressLine2>
+			<idr:AddressLine3>Mustergasse 1</idr:AddressLine3>
+			<idr:AddressLine4>Wien</idr:AddressLine4>
+			<idr:CountryCode>AT</idr:CountryCode>
+			<idr:PostalCode>1000</idr:PostalCode>
+		</idr:PostalAddress>
+	</idr:PersonData>
+	<idr:Identification>
+		<idr:IdMethod>VideoIdent</idr:IdMethod>
+		<idr:IdType>PERS</idr:IdType>
+		<idr:IdNumber>12345678</idr:IdNumber>
+		<idr:IdIssueDate>2011-08-01</idr:IdIssueDate>
+		<idr:IdAuthority>Mag. Wien</idr:IdAuthority>
+		<idr:IdNation>AT</idr:IdNation>
+	</idr:Identification>
+	<idr:ProcessData>
+		<idr:Name>ShortLived</idr:Name>
+		<idr:Design>A-Trust</idr:Design>
+		<idr:Language>DE</idr:Language>
+		<idr:Response>
+			<idr:Success>https://www.a-trust.at/success?token=123455</idr:Success>
+			<idr:Error>https://www.a-trust.at/error?token=123455</idr:Error>
+		</idr:Response>
+	</idr:ProcessData>	
+</idr:Confirmation>
