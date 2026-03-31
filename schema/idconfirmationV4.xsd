@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.a-trust.at/namespace/idconfirmation#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns="http://www.a-trust.at/namespace/idconfirmation#" xmlns:ns="http://www.a-trust.at/namespace/idconfirmation#" xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="W3C-XMLDSig.xsd"/>
+	<!-- Confirmation -->
+	<xsd:element name="Confirmation" type="ConfirmationType">
+		<xsd:annotation>
+			<xsd:documentation>Bestätigung der Identität einer Person</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ConfirmationType">
+		<xsd:sequence>
+			<xsd:element name="PersonData" type="PersonDataType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="Identification" type="IdentificationType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="ProcessData" type="ProcessDataType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="Custom" type="CustomType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="dsig:Signature" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+		<xsd:attribute name="Version" type="ConfirmationVersionType" use="required" />
+	</xsd:complexType>
+	<xsd:complexType name="IdentificationType">
+		<xsd:sequence>
+			<xsd:element name="IdMethod" type="IdMethodType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="IdType" type="IdTypeType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IdNumber" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IdIssueDate" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IdValidToDate" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IdAuthority" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IdNation" type="IdNationType" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="IdTypeType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ASP"/>
+			<xsd:enumeration value="BEPA"/>
+			<xsd:enumeration value="CHID"/>
+			<xsd:enumeration value="eDA"/>
+			<xsd:enumeration value="eDAO"/>
+			<xsd:enumeration value="FLID"/>
+			<xsd:enumeration value="FUEH"/>
+			<xsd:enumeration value="IDKA"/>
+			<xsd:enumeration value="NOTA"/>
+			<xsd:enumeration value="NPA"/>
+			<xsd:enumeration value="PERB"/>
+			<xsd:enumeration value="PERD"/>
+			<xsd:enumeration value="PERK"/>
+			<xsd:enumeration value="PERO"/>
+			<xsd:enumeration value="PERS"/>
+			<xsd:enumeration value="PERT"/>
+			<xsd:enumeration value="PERW"/>
+			<xsd:enumeration value="REIS"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="IdMethodType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="IdCard"/>
+			<xsd:enumeration value="VideoIdent"/>
+			<xsd:enumeration value="AutoIdent"/>
+			<xsd:enumeration value="QES"/>
+			<xsd:enumeration value="EID"/>
+			<xsd:enumeration value="BankIdent"/>
+			<xsd:enumeration value="TrustedDatabase"/>
+		</xsd:restriction>
+	</xsd:simpleType>	
+	<xsd:simpleType name="IdNationType">
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value='2'/>
+			<xsd:maxLength value='2'/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="CustomType">
+		<xsd:annotation>
+			<xsd:documentation>Zusatzfelder fur spezielle Parameter</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Value" type="CustomValueType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="CustomValueType">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="Name" type="xsd:string" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="XMLContentType" mixed="true">
+		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+			<xsd:any namespace="##any" processContents="lax"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="PersonDataType">
+		<xsd:sequence minOccurs="0">
+			<xsd:element name="GivenName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="FamilyName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="Titel" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="SexCode" type="SexCodeType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="DateOfBirth" type="xsd:date" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="PlaceOfBirth" type="xsd:token" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="PhoneNumber" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="EMailAddress" type="xsd:anyURI" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="PostalAddress" type="PostalAddressType" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="SexCodeType">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="male"/>
+			<xsd:enumeration value="female"/>
+			<xsd:enumeration value="company"/>
+			<xsd:enumeration value="diverse"/>
+			<xsd:enumeration value="intersex"/>
+			<xsd:enumeration value="open"/>
+			<xsd:enumeration value="unknown"/>
+			<xsd:enumeration value="not stated"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="PostalAddressType">
+		<xsd:sequence>
+			<xsd:element name="AddressLine1" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength  value="32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="AddressLine2" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength  value="32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="AddressLine3" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength  value="32"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="AddressLine4" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength  value="24"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="CountryCode" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:pattern value="[A-Z]{2}"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="PostalCode" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength  value="6"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ProcessDataType">
+		<xsd:sequence>
+			<xsd:element name="Name" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:token">
+						<xsd:enumeration value="A-TrustQES"/>
+						<xsd:enumeration value="ACOS"/>
+						<xsd:enumeration value="EuIdentity"/>
+						<xsd:enumeration value="WebId"/>
+						<xsd:enumeration value="Seal"/>
+						<xsd:enumeration value="TestCaQES"/>
+						<xsd:enumeration value="ShortLived"/>
+						<xsd:enumeration value="TestShortLived"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Tag" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="CustomerName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Design" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Language" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:pattern value="[A-Z]{2}"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Response" type="ResponseType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IdentValidTo" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Binding" type="BindingType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="HashValue" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ResponseType">
+		<xsd:sequence>
+			<xsd:element name="Success" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Error" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="BindingType">
+	  <xsd:simpleContent>
+		<xsd:extension base="xsd:string">
+		  <xsd:attribute name="type" type="BindingKindType" use="required"/>
+		</xsd:extension>
+	  </xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:simpleType name="BindingKindType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="MobilePhoneNumber"/>
+			<xsd:enumeration value="CINCSN"/>
+			<xsd:enumeration value="ExtCardNumber"/>
+			<xsd:enumeration value="EMail"/>
+			<xsd:enumeration value="ActivationCode"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+<xsd:simpleType name="ConfirmationVersionType">
+  <xsd:restriction base="xsd:integer">
+    <xsd:enumeration value="4"/>
+  </xsd:restriction>
+</xsd:simpleType>	
+</xsd:schema>
